@@ -57,6 +57,16 @@ public:
 	bool is_weighted();		// Возвращает флаг взвешенности графа
 
 	void task_1a();
+	void task_1b();
+	void task_2a();
+	void dfs1(int v, map< int, set< pair<int, int> > >::iterator fromIt);
+	void dfs2(int v);
+
+	map< int, set< pair< int, int > > > adjList;  // Список смежности
+	map< int, set< pair< int, int > > > adjListTransp;  // Список смежности транспонированный
+	vector< vector< int > > adjMatrix;            // Матрица смежности
+	set< tuple< int, int, int > > edgList;        // Список ребер
+	set< tuple< int, int, int > > edgListTransp;        // Список ребер транспонированный
 
 							// Закрытая (приватная) часть класса
 							// Эти функции и данные доступны только внутри класса Graph
@@ -68,7 +78,7 @@ private:
 	int N;          // Количество вершин
 	int M;          // Количество ребер
 
-	map< int, set< pair< int, int > > > adjList;  // Список смежности
+
 };
 
 #endif // GRAPH_H

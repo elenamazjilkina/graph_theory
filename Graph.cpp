@@ -22,7 +22,7 @@ Graph::Graph()
 }
 
 /*
-Деструктор класса Graphъ
+Деструктор класса Graph
 */
 Graph::~Graph()
 {
@@ -38,8 +38,7 @@ void Graph::readGraph(string fileName)
 	ifstream file(fileName.c_str());
 
 	// Если не удалось открыть файл, кинуть исключение
-	if (!file.is_open())
-	{
+	if (!file.is_open()) {
 		cout << "Can't open file " << fileName << "\n";
 		return;
 	}
@@ -48,6 +47,8 @@ void Graph::readGraph(string fileName)
 
 	// Очистить текущее содержимое списка смежности
 	adjList.clear();
+	// Очистить текущее содержимое транспонированного списка смежности
+	adjListTransp.clear();
 
 	// Считать количество вершин
 	file >> N;
@@ -62,8 +63,7 @@ void Graph::readGraph(string fileName)
 	file.ignore(numeric_limits<streamsize>::max(), '\n');
 
 	// Считать N связей вершин
-	for (int from = 0; from < N; from++)
-	{
+	for (int from = 0; from < N; from++) {
 		// Строка для хранения списка связей текущей вершины
 		string rowStr;
 
@@ -80,27 +80,23 @@ void Graph::readGraph(string fileName)
 		int node;
 
 		// Считать вершину
-		iss >> ws >> node;
+		iss >> node;
 
 		// Бежать по rowStr
-		while (!iss.eof() && !iss.str().empty())
-		{
-
+		while (!iss.eof() && !iss.str().empty()) {
 			// Переменная для хранения номера соседней вершины
 			int to;
-
-			// Считать соседнюю вершину
-			iss >> ws >> to;
 
 			// Переменная для хранения веса ребра
 			int weight;
 
+			// Считать соседнюю вершину
+			iss >> to;
+
 			// Если описан взвешенный граф
 			if (weighted)
-			{
 				// Считать вес ребра
-				iss >> ws >> weight;
-			}
+				iss >> weight;
 
 			// Сохранить считанные связи в список связей
 			row.insert(make_pair(to, weight));
@@ -110,7 +106,7 @@ void Graph::readGraph(string fileName)
 		iss.ignore(128);
 
 		// Добавить список связей считанной вершины в список смежности
-		adjList[node] = row;
+		adjList[node] = row; 
 	}
 
 	cout << "done\n";
@@ -153,8 +149,7 @@ void Graph::removeNode(int from)
 	int count_edge = 0; 
 
 	// Если найдено
-	if (fromIt != adjList.end())
-	{
+	if (fromIt != adjList.end()) {
 		// Подсчитываем, сколько ребер у удаляемой вершины
 		count_edge = adjList.count(from);
 		
@@ -162,27 +157,23 @@ void Graph::removeNode(int from)
 		adjList.erase(from);
 
 		// Бежать по строкам
-		for (map< int, set< pair<int, int> > >::iterator It = adjList.begin(); It != adjList.end(); It++)
-		{
+		for (map< int, set< pair<int, int> > >::iterator It = adjList.begin(); It != adjList.end(); It++) {
 
 			// Найти среди соседей вершину, являющуюся концом ребра, которое необходимо удалить
-			toIt = find_if(It->second.begin(), It->second.end(), [&from](const pair<int, int>& edge)
-			{
+			toIt = find_if(It->second.begin(), It->second.end(), [&from](const pair<int, int>& edge) {
 				if (edge.first == from) return true;
 				return false;
 			});
 
 			// Если удалось что-то найти
-			if (toIt != It->second.end())
-			{
+			if (toIt != It->second.end()) {
 				// Удалить требуемое ребро
 				It->second.erase(toIt);
 				count_edge++;
 			}
 		}
 	}
-	else //если нет такой вершины
-	{
+	else { //если нет такой вершины 
 		// Сообщить об ошибке
 		cout << "\nCan't removing node " << from << ", the node doesn't exists\n";
 		return;
@@ -214,8 +205,7 @@ void Graph::addEdge(int from, int to, int weight)
 	fromIt = adjList.find(from);
 
 	// Если не найдено
-	if (fromIt == adjList.end())
-	{
+	if (fromIt == adjList.end()) {
 		// Сообщить об ошибке
 		cout << "\nCan't add edge from " << from << " to " << to << ", the node doesn't exists\n";
 		return;
@@ -226,19 +216,14 @@ void Graph::addEdge(int from, int to, int weight)
 
 	// Если граф взвешенный
 	if (weighted)
-	{
 		// Найти соседей текущей вершины, используя указанный вес
 		toIt = fromIt->second.find(make_pair(to, weight));
-	}
 	else    // // Если граф невзвешенный
-	{
 		// Найти соседей текущей вершины, используя в качестве веса 0
 		toIt = fromIt->second.find(make_pair(to, 0));
-	}
 
 	// Если удалось что-то найти
-	if (toIt != fromIt->second.end())
-	{
+	if (toIt != fromIt->second.end()) {
 		// Сообщить об ошибке
 		cout << "\nCan't add edge from " << from << " to " << to << ", the edge already exists\n";
 		return;
@@ -246,32 +231,22 @@ void Graph::addEdge(int from, int to, int weight)
 
 	// Если граф взвешенный
 	if (weighted)
-	{
 		// Вставить новую соседнюю вершину, назначить ребру указанный вес
 		fromIt->second.insert(make_pair(to, weight));
-	}
 	else    // Если граф невзвешенный
-	{
 		// Вставить новую соседнюю вершину, назначить ребру вес 0
 		fromIt->second.insert(make_pair(to, 0));
-	}
 
 	// Если граф неориентированный, то добавить также ребро в обратном направлении
-	if (!oriented)
-	{
+	if (!oriented) {
 		// Если граф взвешенный
 		if (weighted)
-		{
 			// Использовать указанный вес
 			adjList[to].insert(make_pair(from, weight));
-		}
 		else    // Если граф невзвешенный
-		{
 			// Использовать вес 0
 			adjList[to].insert(make_pair(from, 0));
-		}
 	}
-
 
 	// Увеличить счетчик ребер
 	M++;
@@ -297,48 +272,37 @@ void Graph::removeEdge(int from, int to)
 	fromIt = adjList.find(from);
 
 	// Если найдено
-	if (fromIt != adjList.end())
-	{
+	if (fromIt != adjList.end()) {
 		// Найти среди соседей вершину, являющуюся концом ребра, которое необходимо удалить
-		toIt = find_if(fromIt->second.begin(), fromIt->second.end(),
-			[&to](const pair<int, int>& edge)
-		{
+		toIt = find_if(fromIt->second.begin(), fromIt->second.end(), [&to](const pair<int, int>& edge) {
 			if (edge.first == to) return true;
 			return false;
 		});
 
 		// Если удалось что-то найти
 		if (toIt != fromIt->second.end())
-		{
 			// Удалить требуемое ребро
 			fromIt->second.erase(toIt);
-		}
 	}
 
 	// Если граф неориентированный, то удалить также ребро в обратном направлении
-	if (!oriented)
-	{
+	if (!oriented) {
 		// Найти в списке смежности начало ребра
 		fromIt = adjList.find(to);
 
 		// Если не найдено
 		if (fromIt == adjList.end())
-		{
 			// Вершина не существует, удалять нечего
 			return;
-		}
 
 		// Найти среди соседей вершину, являющуюся концом ребра, которое необходимо удалить
-		toIt = find_if(fromIt->second.begin(), fromIt->second.end(),
-			[&from](const pair<int, int>& edge)
-		{
+		toIt = find_if(fromIt->second.begin(), fromIt->second.end(), [&from](const pair<int, int>& edge) {
 			if (edge.first == from) return true;
 			return false;
 		});
 
 		// Если не удалось ничего найти
-		if (toIt == fromIt->second.end())
-		{
+		if (toIt == fromIt->second.end()) {
 			// Сообщить об ошибке (в неориентированном графе ребро должно быть в обоих направлениях)
 			cout << "\nCan't remove edge from " << to << " to " << from << ", the edge doesn't exists\n";
 			return;
@@ -362,14 +326,12 @@ void Graph::removeEdge(int from, int to)
 int Graph::changeEdge(int from, int to, int newWeight)
 {
 	// Если граф невзвешенный
-	if (weighted == false)
-	{
+	if (weighted == false) {
 		// Сообщить об ошибке (у ребер нет весов, модифицировать нечего)
 		cout << "\tSorry, you can't modify an edge weight of non-weighted graph\n";
 		return -1;
 	}
-	else 
-	{
+	else {
 		cout << "Changing edge from " << from << " to " << to << ", new weight is " << newWeight << "...\t";
 		int oldWeight = 0;
 
@@ -380,8 +342,7 @@ int Graph::changeEdge(int from, int to, int newWeight)
 		fromIt = adjList.find(from);
 
 		// Если не найдено
-		if (fromIt == adjList.end())
-		{
+		if (fromIt == adjList.end()) {
 			// Сообщить об ошибке
 			cout << "\nCan't change edge from " << from << " to " << to << ", the node doesn't exists\n";
 			return -1;
@@ -393,16 +354,13 @@ int Graph::changeEdge(int from, int to, int newWeight)
 		set< pair<int, int> >::iterator toIt;
 
 		// Найти среди соседей вершину, являющуюся концом ребра, которое необходимо изменить
-		toIt = find_if(fromIt->second.begin(), fromIt->second.end(),
-			[&to](const pair<int, int>& edge)
-		{
+		toIt = find_if(fromIt->second.begin(), fromIt->second.end(), [&to](const pair<int, int>& edge) {
 			if (edge.first == to) return true;
 			return false;
 		});
 
 		// Если не удалось ничего найти
-		if (toIt == fromIt->second.end())
-		{
+		if (toIt == fromIt->second.end()) {
 			// Сообщить об ошибке
 			cout << "\nCan't change edge from " << from << " to " << to << ", the edge doesn't' exists\n";
 			return -1;
@@ -418,29 +376,23 @@ int Graph::changeEdge(int from, int to, int newWeight)
 		fromIt->second.insert(copy);
 
 		// Если граф неориентированный, то изменить также ребро в обратном направлении
-		if (!oriented)
-		{
+		if (!oriented) {
 			// Найти в списке смежности начало ребра
 			fromIt = adjList.find(to);
 
 			// Если не найдено
 			if (fromIt == adjList.end())
-			{
 				// Вершина не существует, удалять нечего
 				return -1;
-			}
 
 			// Найти среди соседей вершину, являющуюся концом ребра, которое необходимо удалить
-			toIt = find_if(fromIt->second.begin(), fromIt->second.end(),
-				[&from](const pair<int, int>& edge)
-			{
+			toIt = find_if(fromIt->second.begin(), fromIt->second.end(), [&from](const pair<int, int>& edge) {
 				if (edge.first == from) return true;
 				return false;
 			});
 
 			// Если не удалось ничего найти
-			if (toIt == fromIt->second.end())
-			{
+			if (toIt == fromIt->second.end()) {
 				// Сообщить об ошибке (в неориентированном графе ребро должно быть в обоих направлениях)
 				cout << "\nCan't change edge from " << to << " to " << from << ", the edge doesn't exists\n";
 				return -1;
@@ -475,47 +427,32 @@ void Graph::printGraph()
 
 	// Отобразить флаг ориентированности
 	if (oriented)
-	{
 		cout << "oriented, ";
-	}
 	else
-	{
 		cout << "not oriented, ";
-	}
 
 	// Отобразить флаг взвешенности
 	if (weighted)
-	{
 		cout << "weighted, ";
-	}
 	else
-	{
 		cout << "not weighted, ";
-	}
 
 	cout << "adjacency list)...\t\n";
 
 	// Бежать по строкам
-	for (map< int, set< pair<int, int> > >::iterator fromIt = adjList.begin(); fromIt != adjList.end(); fromIt++)
-	{
+	for (map< int, set< pair<int, int> > >::iterator fromIt = adjList.begin(); fromIt != adjList.end(); fromIt++) {
 		cout << "node " << fromIt->first << ": ";
-
 		// Бежать по столбцам
-		for (set< pair<int, int> >::iterator toIt = fromIt->second.begin(); toIt != fromIt->second.end(); toIt++)
-		{
+		for (set< pair<int, int> >::iterator toIt = fromIt->second.begin(); toIt != fromIt->second.end(); toIt++) {
 			// Напечатать конец текущего ребра
 			cout << "to " << toIt->first;
 
 			// Если граф взвешенный
 			if (weighted)
-			{
 				// Напечатать вес текущего ребра
 				cout << " weight: " << toIt->second << ", ";
-			}
-
 			cout << " ";
 		}
-
 		cout << "\n";
 	}
 }
@@ -527,8 +464,7 @@ void Graph::writeGraph(string fileName)
 	ofstream file(fileName.c_str());
 
 	// Если не удалось открыть файл, кинуть исключение
-	if (!file.is_open())
-	{
+	if (!file.is_open()) {
 		cout << "Can't open file " << fileName << "\n";
 		return;
 	}
@@ -545,36 +481,27 @@ void Graph::writeGraph(string fileName)
 	file << weighted << "\n";
 
 	// Бежать по строкам
-	for (map< int, set< pair<int, int> > >::iterator fromIt = adjList.begin(); fromIt != adjList.end(); fromIt++)
-	{
+	for (map< int, set< pair<int, int> > >::iterator fromIt = adjList.begin(); fromIt != adjList.end(); fromIt++) {
 		file << fromIt->first << " ";
-
 		// Бежать по столбцам
-		for (set< pair<int, int> >::iterator toIt = fromIt->second.begin(); toIt != fromIt->second.end(); toIt++)
-		{
+		for (set< pair<int, int> >::iterator toIt = fromIt->second.begin(); toIt != fromIt->second.end(); toIt++) {
 			// Напечатать конец текущего ребра
 			file << toIt->first;
 
 			// Если граф взвешенный
 			if (weighted)
-			{
 				// Напечатать вес текущего ребра
 				file << " " << toIt->second;
-			}
-
 			file << " ";
 		}
-
 		file << "\n";
 	}
-
 	cout << "done\n";
 }
 
 void Graph::task_1a()
 {
-	if (oriented) 
-	{
+	if (oriented) {
 		cout << "Enter the node: ";
 		int from = 0;
 		cin >> from;
@@ -585,26 +512,105 @@ void Graph::task_1a()
 		if (fromIt != adjList.end()) {
 			cout << "Outgoing nodes: ";
 			if (fromIt->second.size() == 0) 
-			{
 				cout << "This node has no neighbors\n";
-			}
-			else
-			{
+			else {
 				// Бежать по столбцам
-				for (set< pair<int, int> >::iterator toIt = fromIt->second.begin(); toIt != fromIt->second.end(); toIt++)
-				{
+				for (set< pair<int, int> >::iterator toIt = fromIt->second.begin(); toIt != fromIt->second.end(); toIt++) 
 					// Напечатать выходящую вершину
 					cout << toIt->first << " ";
-				}
 			}
 		}
 		else
-		{
 			cout << "\nThis node doesn't exists\n";
-		}
 	}
 	else
-	{
 		cout << "\nThe task is impossible. Graph is non-oriented\n";
+}
+
+void Graph::task_1b()
+{
+	Graph graph2;
+	cout << "Reading graph...\n";
+
+	string fileName;
+
+	cout << "\tEnter file name > ";
+	cin >> fileName;
+	graph2.readGraph(fileName); 
+	if (adjList.size() == graph2.adjList.size() && adjList == graph2.adjList && oriented == graph2.oriented && weighted == graph2.weighted)
+		cout << "Graphs match\n";
+	else
+		cout << "Graphs do not match\n";
+}
+
+vector<char> used; //массив пометок  
+vector<int> order, component;
+
+void Graph::dfs1(int v, map< int, set< pair<int, int> > >::iterator fromIt) {
+	used[v] = true;
+	/*map< int, set< pair<int, int> > >::iterator fromIt = adjList.find(v);*/
+	for (set< pair<int, int> >::iterator toIt = fromIt->second.begin(); toIt != fromIt->second.end(); toIt++)
+		if (!used[toIt->first])
+			dfs1(toIt->first, fromIt);  
+	order.push_back(v);
+}
+void Graph::dfs2(int v) {
+	used[v] = true;
+	component.push_back(v);
+	map< int, set< pair<int, int> > >::iterator fromIt = adjListTransp.find(v);
+	for (set< pair<int, int> >::iterator toIt = fromIt->second.begin(); toIt != fromIt->second.end(); toIt++)
+		if (!used[toIt->first])
+			dfs2(toIt->first);
+}
+
+void Graph::task_2a()
+{
+	// Транспонирование списка смежности 
+	// Сначала переводим его в транспонированный список ребер
+	edgListTransp.clear();
+	for (map< int, set< pair< int, int > > >::iterator i = adjList.begin(); i != adjList.end(); i++) {
+		for (set< pair< int, int > >::iterator j = i->second.begin(); j != i->second.end(); j++) {
+			//edgList.insert(make_tuple(i->first, j->first, j->second));
+			edgListTransp.insert(make_tuple(j->first, i->first, j->second));
+		}
+	}
+	//Транспонированный список ребер переводим обратно в список смежности 
+	for (set< tuple<int, int, int> >::iterator it = edgListTransp.begin(); it != edgListTransp.end(); it++) {
+		adjListTransp[get<0>(*it)].insert(make_pair(get<1>(*it), get<2>(*it)));
+	}
+	edgListTransp.clear();
+
+	// Бежать по строкам
+	for (map< int, set< pair<int, int> > >::iterator fromIt = adjListTransp.begin(); fromIt != adjListTransp.end(); fromIt++) {
+		cout << "node " << fromIt->first << ": ";
+		// Бежать по столбцам
+		for (set< pair<int, int> >::iterator toIt = fromIt->second.begin(); toIt != fromIt->second.end(); toIt++)
+			// Напечатать конец текущего ребра
+			cout << "to " << toIt->first;
+		cout << "\n";
+	}
+
+	used.assign(100, false);
+	for (map< int, set< pair<int, int> > >::iterator fromIt = adjList.begin(); fromIt != adjList.end(); fromIt++) {
+		if (!used[fromIt->first]) 
+			dfs1(fromIt->first, fromIt);
+	}
+
+
+	for (int i = 0; i < order.size(); i++)
+		cout << order[i];
+	cout << " ";
+
+	used.assign(100, false);
+	for (int i = 0; i < order.size(); i++) {
+		int v = order.back();
+		if (!used[v]) {
+			dfs2(v);
+			for (int i = 0; i < component.size(); i++)
+				cout << component[i];
+			component.clear();
+			cout << " ";
+		}
+		order.pop_back();
 	}
 }

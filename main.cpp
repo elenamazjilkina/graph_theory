@@ -1,7 +1,6 @@
 
 #include "stdafx.h"
 #include "Graph.h"
-#include "Test.h"
 #include <iostream> 
 #include <fstream>  
 
@@ -134,6 +133,14 @@ int main()
 		else if (choice == "1a")
 		{
 			graph.task_1a();
+		}
+		else if (choice == "1b")
+		{
+			graph.task_1b();
+		}
+		else if (choice == "2a")
+		{
+			graph.task_2a();
 		}
 
 		cout << "\ndone\n";
