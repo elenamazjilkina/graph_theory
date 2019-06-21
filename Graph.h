@@ -59,8 +59,9 @@ public:
 	void task_1a();
 	void task_1b();
 	void task_2a();
-	void dfs1(int v, map< int, set< pair<int, int> > >::iterator fromIt);
+	void dfs1(int v);
 	void dfs2(int v);
+	void task_2b();
 
 	map< int, set< pair< int, int > > > adjList;  // Список смежности
 	map< int, set< pair< int, int > > > adjListTransp;  // Список смежности транспонированный

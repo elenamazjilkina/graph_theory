@@ -142,6 +142,10 @@ int main()
 		{
 			graph.task_2a();
 		}
+		else if (choice == "2b")
+		{
+			graph.task_2b();
+		}
 
 		cout << "\ndone\n";
 	} while (choice != "0");

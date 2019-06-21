@@ -499,6 +499,11 @@ void Graph::writeGraph(string fileName)
 	cout << "done\n";
 }
 
+
+/*----------------------------------------------РЕАЛИЗАЦИЯ ЗАДАЧ----------------------------------------------------*/
+
+
+/*Для данной вершины орграфа вывести все "выходящие" вершины*/ 
 void Graph::task_1a()
 {
 	if (oriented) {
@@ -527,6 +532,8 @@ void Graph::task_1a()
 		cout << "\nThe task is impossible. Graph is non-oriented\n";
 }
 
+
+/*Выяснить, совпадают ли два заданных графа*/ 
 void Graph::task_1b()
 {
 	Graph graph2;
@@ -543,22 +550,26 @@ void Graph::task_1b()
 		cout << "Graphs do not match\n";
 }
 
+
+
+/*Выяснить, является ли орграф сильно связным*/
+
 vector<char> used; //массив пометок  
 vector<int> order, component;
 
-void Graph::dfs1(int v, map< int, set< pair<int, int> > >::iterator fromIt) {
+void Graph::dfs1(int v) {
 	used[v] = true;
-	/*map< int, set< pair<int, int> > >::iterator fromIt = adjList.find(v);*/
-	for (set< pair<int, int> >::iterator toIt = fromIt->second.begin(); toIt != fromIt->second.end(); toIt++)
+	map< int, set< pair<int, int> > >::iterator fromIt = adjList.find(v);
+	for (set< pair<int, int> >::iterator toIt = fromIt->second.begin(); toIt != fromIt->second.end(); ++toIt)
 		if (!used[toIt->first])
-			dfs1(toIt->first, fromIt);  
+			dfs1(toIt->first);  
 	order.push_back(v);
 }
 void Graph::dfs2(int v) {
 	used[v] = true;
 	component.push_back(v);
 	map< int, set< pair<int, int> > >::iterator fromIt = adjListTransp.find(v);
-	for (set< pair<int, int> >::iterator toIt = fromIt->second.begin(); toIt != fromIt->second.end(); toIt++)
+	for (set< pair<int, int> >::iterator toIt = fromIt->second.begin(); toIt != fromIt->second.end(); ++toIt)
 		if (!used[toIt->first])
 			dfs2(toIt->first);
 }
@@ -570,7 +581,6 @@ void Graph::task_2a()
 	edgListTransp.clear();
 	for (map< int, set< pair< int, int > > >::iterator i = adjList.begin(); i != adjList.end(); i++) {
 		for (set< pair< int, int > >::iterator j = i->second.begin(); j != i->second.end(); j++) {
-			//edgList.insert(make_tuple(i->first, j->first, j->second));
 			edgListTransp.insert(make_tuple(j->first, i->first, j->second));
 		}
 	}
@@ -580,37 +590,70 @@ void Graph::task_2a()
 	}
 	edgListTransp.clear();
 
-	// Бежать по строкам
-	for (map< int, set< pair<int, int> > >::iterator fromIt = adjListTransp.begin(); fromIt != adjListTransp.end(); fromIt++) {
-		cout << "node " << fromIt->first << ": ";
-		// Бежать по столбцам
-		for (set< pair<int, int> >::iterator toIt = fromIt->second.begin(); toIt != fromIt->second.end(); toIt++)
-			// Напечатать конец текущего ребра
-			cout << "to " << toIt->first;
-		cout << "\n";
-	}
-
 	used.assign(100, false);
 	for (map< int, set< pair<int, int> > >::iterator fromIt = adjList.begin(); fromIt != adjList.end(); fromIt++) {
 		if (!used[fromIt->first]) 
-			dfs1(fromIt->first, fromIt);
+			dfs1(fromIt->first);
 	}
 
-
-	for (int i = 0; i < order.size(); i++)
-		cout << order[i];
-	cout << " ";
-
 	used.assign(100, false);
-	for (int i = 0; i < order.size(); i++) {
+	int col = 0;
+	while (!order.empty()) {
 		int v = order.back();
 		if (!used[v]) {
 			dfs2(v);
-			for (int i = 0; i < component.size(); i++)
-				cout << component[i];
-			component.clear();
-			cout << " ";
+			col++;
 		}
 		order.pop_back();
+	}
+	if (col == 1)
+		cout << "Graph is strongly connected\n";
+	else 
+		cout << "Graph is not strongly connected\n";
+}
+
+
+/*Вывести кратчайшие пути из заданной вершины во все остальные*/ 
+
+void Graph::task_2b()
+{
+	const int INF = 1000000000;
+	int s; //стартовая вершина 
+	cout << "Enter the start node: \n";
+	cin >> s;
+	vector<int> d (adjList.size() + 1, INF), p (adjList.size() + 1);
+	d[s] = 0;
+	vector<char> u (adjList.size() + 1);
+	for (map< int, set< pair<int, int> > >::iterator i = adjList.begin(); i != adjList.end(); ++i) {
+		int v = -1;
+		for (map< int, set< pair<int, int> > >::iterator j = adjList.begin(); j != adjList.end(); ++j)
+			if (!u[j->first] && (v == -1 || d[j->first] < d[v]))
+				v = j->first;
+		if (d[v] == INF)
+			break;
+		u[v] = true;
+
+		map< int, set< pair<int, int> > >::iterator fromIt = adjList.find(v);
+		for (set< pair<int, int> >::iterator toIt = fromIt->second.begin(); toIt != fromIt->second.end(); toIt++) {
+			int to = toIt->first,
+				len = toIt->second;
+			if (d[v] + len < d[to]) {
+				d[to] = d[v] + len;
+				p[to] = v;
+			}
+		}
+	}
+	vector<int> path;
+	int t;
+	cout << "Enter the node to: ";
+	cin >> t;
+	for (int v = t; v != s; v = p[v])
+		path.push_back(v);
+	path.push_back(s);
+	reverse(path.begin(), path.end());
+	for (int j = 0; j < path.size(); j++)
+	{
+		cout << path[j];
+		cout << " ";
 	}
 }
