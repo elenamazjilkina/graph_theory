@@ -62,15 +62,17 @@ public:
 	void dfs1(int v);
 	void dfs2(int v);
 	void task_2b();
+	void task_3();
 
 	map< int, set< pair< int, int > > > adjList;  // Список смежности
 	map< int, set< pair< int, int > > > adjListTransp;  // Список смежности транспонированный
 	vector< vector< int > > adjMatrix;            // Матрица смежности
 	set< tuple< int, int, int > > edgList;        // Список ребер
 	set< tuple< int, int, int > > edgListTransp;        // Список ребер транспонированный
+	vector < pair < int, pair<int, int> > > listWeight; //Список ребер для сортирвки по весу в алгоритме Крускала
 
-							// Закрытая (приватная) часть класса
-							// Эти функции и данные доступны только внутри класса Graph
+														// Закрытая (приватная) часть класса
+														// Эти функции и данные доступны только внутри класса Graph
 private:
 
 	// Данные-члены (поля) класса

@@ -106,7 +106,7 @@ void Graph::readGraph(string fileName)
 		iss.ignore(128);
 
 		// Добавить список связей считанной вершины в список смежности
-		adjList[node] = row; 
+		adjList[node] = row;
 	}
 
 	cout << "done\n";
@@ -146,13 +146,13 @@ void Graph::removeNode(int from)
 	fromIt = adjList.find(from);
 
 	// Количество удаляемых ребер
-	int count_edge = 0; 
+	int count_edge = 0;
 
 	// Если найдено
 	if (fromIt != adjList.end()) {
 		// Подсчитываем, сколько ребер у удаляемой вершины
 		count_edge = adjList.count(from);
-		
+
 		//Удаляем ее
 		adjList.erase(from);
 
@@ -174,7 +174,7 @@ void Graph::removeNode(int from)
 		}
 	}
 	else { //если нет такой вершины 
-		// Сообщить об ошибке
+		   // Сообщить об ошибке
 		cout << "\nCan't removing node " << from << ", the node doesn't exists\n";
 		return;
 	}
@@ -219,7 +219,7 @@ void Graph::addEdge(int from, int to, int weight)
 		// Найти соседей текущей вершины, используя указанный вес
 		toIt = fromIt->second.find(make_pair(to, weight));
 	else    // // Если граф невзвешенный
-		// Найти соседей текущей вершины, используя в качестве веса 0
+			// Найти соседей текущей вершины, используя в качестве веса 0
 		toIt = fromIt->second.find(make_pair(to, 0));
 
 	// Если удалось что-то найти
@@ -234,7 +234,7 @@ void Graph::addEdge(int from, int to, int weight)
 		// Вставить новую соседнюю вершину, назначить ребру указанный вес
 		fromIt->second.insert(make_pair(to, weight));
 	else    // Если граф невзвешенный
-		// Вставить новую соседнюю вершину, назначить ребру вес 0
+			// Вставить новую соседнюю вершину, назначить ребру вес 0
 		fromIt->second.insert(make_pair(to, 0));
 
 	// Если граф неориентированный, то добавить также ребро в обратном направлении
@@ -244,7 +244,7 @@ void Graph::addEdge(int from, int to, int weight)
 			// Использовать указанный вес
 			adjList[to].insert(make_pair(from, weight));
 		else    // Если граф невзвешенный
-			// Использовать вес 0
+				// Использовать вес 0
 			adjList[to].insert(make_pair(from, 0));
 	}
 
@@ -503,7 +503,7 @@ void Graph::writeGraph(string fileName)
 /*----------------------------------------------РЕАЛИЗАЦИЯ ЗАДАЧ----------------------------------------------------*/
 
 
-/*Для данной вершины орграфа вывести все "выходящие" вершины*/ 
+/*Для данной вершины орграфа вывести все "выходящие" вершины*/
 void Graph::task_1a()
 {
 	if (oriented) {
@@ -516,11 +516,11 @@ void Graph::task_1a()
 		// Если нашли 
 		if (fromIt != adjList.end()) {
 			cout << "Outgoing nodes: ";
-			if (fromIt->second.size() == 0) 
+			if (fromIt->second.size() == 0)
 				cout << "This node has no neighbors\n";
 			else {
 				// Бежать по столбцам
-				for (set< pair<int, int> >::iterator toIt = fromIt->second.begin(); toIt != fromIt->second.end(); toIt++) 
+				for (set< pair<int, int> >::iterator toIt = fromIt->second.begin(); toIt != fromIt->second.end(); toIt++)
 					// Напечатать выходящую вершину
 					cout << toIt->first << " ";
 			}
@@ -533,7 +533,7 @@ void Graph::task_1a()
 }
 
 
-/*Выяснить, совпадают ли два заданных графа*/ 
+/*Выяснить, совпадают ли два заданных графа*/
 void Graph::task_1b()
 {
 	Graph graph2;
@@ -543,7 +543,7 @@ void Graph::task_1b()
 
 	cout << "\tEnter file name > ";
 	cin >> fileName;
-	graph2.readGraph(fileName); 
+	graph2.readGraph(fileName);
 	if (adjList.size() == graph2.adjList.size() && adjList == graph2.adjList && oriented == graph2.oriented && weighted == graph2.weighted)
 		cout << "Graphs match\n";
 	else
@@ -562,7 +562,7 @@ void Graph::dfs1(int v) {
 	map< int, set< pair<int, int> > >::iterator fromIt = adjList.find(v);
 	for (set< pair<int, int> >::iterator toIt = fromIt->second.begin(); toIt != fromIt->second.end(); ++toIt)
 		if (!used[toIt->first])
-			dfs1(toIt->first);  
+			dfs1(toIt->first);
 	order.push_back(v);
 }
 void Graph::dfs2(int v) {
@@ -592,7 +592,7 @@ void Graph::task_2a()
 
 	used.assign(100, false);
 	for (map< int, set< pair<int, int> > >::iterator fromIt = adjList.begin(); fromIt != adjList.end(); fromIt++) {
-		if (!used[fromIt->first]) 
+		if (!used[fromIt->first])
 			dfs1(fromIt->first);
 	}
 
@@ -608,12 +608,12 @@ void Graph::task_2a()
 	}
 	if (col == 1)
 		cout << "Graph is strongly connected\n";
-	else 
+	else
 		cout << "Graph is not strongly connected\n";
 }
 
 
-/*Вывести кратчайшие пути из заданной вершины во все остальные*/ 
+/*Вывести кратчайшие пути из заданной вершины во все остальные*/
 
 void Graph::task_2b()
 {
@@ -621,9 +621,9 @@ void Graph::task_2b()
 	int s; //стартовая вершина 
 	cout << "Enter the start node: \n";
 	cin >> s;
-	vector<int> d (adjList.size() + 1, INF), p (adjList.size() + 1);
+	vector<int> d(adjList.size() + 1, INF), p(adjList.size() + 1);
 	d[s] = 0;
-	vector<char> u (adjList.size() + 1);
+	vector<char> u(adjList.size() + 1);
 	for (map< int, set< pair<int, int> > >::iterator i = adjList.begin(); i != adjList.end(); ++i) {
 		int v = -1;
 		for (map< int, set< pair<int, int> > >::iterator j = adjList.begin(); j != adjList.end(); ++j)
@@ -644,16 +644,61 @@ void Graph::task_2b()
 		}
 	}
 	vector<int> path;
-	int t;
-	cout << "Enter the node to: ";
-	cin >> t;
-	for (int v = t; v != s; v = p[v])
-		path.push_back(v);
-	path.push_back(s);
-	reverse(path.begin(), path.end());
-	for (int j = 0; j < path.size(); j++)
+	//int t;
+	//cout << "Enter the node to: ";
+	//cin >> t;
+	for (map< int, set< pair<int, int> > >::iterator fromIt = adjList.begin(); fromIt != adjList.end(); ++fromIt) {
+		if (fromIt->first == s)
+			continue;
+		else {
+			for (int v = fromIt->first; v != s; v = p[v])
+				path.push_back(v);
+			path.push_back(s);
+			reverse(path.begin(), path.end());
+			cout << "to " << fromIt->first << ": ";
+			for (int j = 0; j < path.size(); j++)
+			{
+				cout << path[j];
+				cout << " ";
+			}
+			cout << endl;
+		}
+		path.clear();
+	}
+}
+
+
+/*Алгоритм Крускала для выявления минимального остовного дерева*/
+
+void Graph::task_3() 
+{
+	for (map< int, set< pair< int, int > > >::iterator i = adjList.begin(); i != adjList.end(); i++) {
+		for (set< pair< int, int > >::iterator j = i->second.begin(); j != i->second.end(); j++) {
+			listWeight.push_back(make_pair(j->second, make_pair(i->first, j->first)));
+		}
+	}
+	int cost = 0;
+	vector < pair<int, int> > res;
+	sort(listWeight.begin(), listWeight.end()); 
+	vector<int> tree_id(adjList.size() + 1);
+	for (int i = 0; i < adjList.size() + 1; ++i)
+		tree_id[i] = i;
+	for (int i = 0; i < listWeight.size(); ++i)
 	{
-		cout << path[j];
-		cout << " ";
+		int a = listWeight[i].second.first, b = listWeight[i].second.second, l = listWeight[i].first;
+		if (tree_id[a] != tree_id[b])
+		{
+			cost += l;
+			res.push_back(make_pair(a, b));
+			int old_id = tree_id[b], new_id = tree_id[a];
+			for (int j = 0; j < adjList.size() + 1; ++j)
+				if (tree_id[j] == old_id)
+					tree_id[j] = new_id;
+		}
+	}
+	cout << "Minimum spanning tree: \n";
+	for (vector < pair<int, int> >::iterator it = res.begin(); it != res.end(); ++it)
+	{
+		cout << "from " << it->first << " to " << it->second << " \n";
 	}
 }

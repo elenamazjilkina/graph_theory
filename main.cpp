@@ -52,7 +52,7 @@ int main()
 		else if (choice == "3")
 		{
 			cout << "Current graph...\n";
-			
+
 			graph.printGraph();
 		}
 		else if (choice == "4")
@@ -146,7 +146,10 @@ int main()
 		{
 			graph.task_2b();
 		}
-
+		else if (choice == "3a")
+		{
+			graph.task_3();
+		}
 		cout << "\ndone\n";
 	} while (choice != "0");
 
