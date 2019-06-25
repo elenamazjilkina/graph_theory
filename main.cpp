@@ -1,4 +1,3 @@
-
 #include "stdafx.h"
 #include "Graph.h"
 #include <iostream> 
@@ -149,6 +148,14 @@ int main()
 		else if (choice == "3a")
 		{
 			graph.task_3();
+		}
+		else if (choice == "4a")
+		{
+			graph.task_4a();
+		}
+		else if (choice == "4b")
+		{
+			graph.task_4b();
 		}
 		cout << "\ndone\n";
 	} while (choice != "0");

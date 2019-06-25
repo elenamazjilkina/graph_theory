@@ -644,9 +644,6 @@ void Graph::task_2b()
 		}
 	}
 	vector<int> path;
-	//int t;
-	//cout << "Enter the node to: ";
-	//cin >> t;
 	for (map< int, set< pair<int, int> > >::iterator fromIt = adjList.begin(); fromIt != adjList.end(); ++fromIt) {
 		if (fromIt->first == s)
 			continue;
@@ -670,7 +667,7 @@ void Graph::task_2b()
 
 /*јлгоритм  рускала дл€ вы€влени€ минимального остовного дерева*/
 
-void Graph::task_3() 
+void Graph::task_3()
 {
 	for (map< int, set< pair< int, int > > >::iterator i = adjList.begin(); i != adjList.end(); i++) {
 		for (set< pair< int, int > >::iterator j = i->second.begin(); j != i->second.end(); j++) {
@@ -679,7 +676,7 @@ void Graph::task_3()
 	}
 	int cost = 0;
 	vector < pair<int, int> > res;
-	sort(listWeight.begin(), listWeight.end()); 
+	sort(listWeight.begin(), listWeight.end());
 	vector<int> tree_id(adjList.size() + 1);
 	for (int i = 0; i < adjList.size() + 1; ++i)
 		tree_id[i] = i;
@@ -700,5 +697,114 @@ void Graph::task_3()
 	for (vector < pair<int, int> >::iterator it = res.begin(); it != res.end(); ++it)
 	{
 		cout << "from " << it->first << " to " << it->second << " \n";
+	}
+}
+
+
+/*Ёксцентриситет вершины Ч максимальное рассто€ние из всех минимальных рассто€ний от других вершин до данной вершины. 
+–адиус графа Ч минимальный из эксцентриситетов его вершин. 
+Ќайти центр графа Ч множество вершин, эксцентриситеты которых равны радиусу графа*/
+
+void Graph::task_4a()
+{
+	const int INF = 1000000000;
+	vector< pair<int, int> > excentr;
+	for (map< int, set< pair< int, int > > >::iterator fromIt = adjList.begin(); fromIt != adjList.end(); fromIt++) {
+		vector<int> d(adjList.size() + 1, INF);
+		d[fromIt->first] = 0;
+		int max = 0;
+		int vertex;
+		vector<char> u(adjList.size() + 1);
+		for (map< int, set< pair<int, int> > >::iterator i = adjList.begin(); i != adjList.end(); ++i) {
+			int v = -1;
+			for (map< int, set< pair<int, int> > >::iterator j = adjList.begin(); j != adjList.end(); ++j)
+				if (!u[j->first] && (v == -1 || d[j->first] < d[v]))
+					v = j->first;
+			if (d[v] == INF)
+				break;
+			u[v] = true;
+			
+			map< int, set< pair<int, int> > >::iterator from = adjList.find(v);
+			for (set< pair<int, int> >::iterator toIt = from->second.begin(); toIt != from->second.end(); toIt++) {
+				int to = toIt->first,
+					len = toIt->second;
+				if (d[v] + len < d[to]) 
+					d[to] = d[v] + len;
+				if (d[v] > max && d[v] != 1000000000) {
+					max = d[v];
+					vertex = fromIt->first;
+				}
+			}
+		}
+		excentr.push_back(make_pair(max, vertex));
+		d.clear();
+	}
+	int rad = INF;
+	cout << "Excentricity - " << "Vertex\n";
+	for (int j = 0; j < excentr.size(); j++) {
+		cout << excentr[j].first << " " << excentr[j].second;
+		cout << "\n";
+		if (excentr[j].first < rad)
+			rad = excentr[j].first;
+	}
+	cout << "\nRadius "<< rad;
+	vector<int> center;
+	for (int j = 0; j < excentr.size(); j++)
+	{
+		if (excentr[j].first == rad)
+			center.push_back(excentr[j].second);
+	}
+	cout << "\nCenter ";
+	for (int j = 0; j < center.size(); j++)
+	{
+		cout << center[j] << " ";
+	}
+}
+
+void Graph::task_4b()
+{
+	const int INF = 1000000000;
+	vector< pair<int, int> > excentr;
+	for (map< int, set< pair< int, int > > >::iterator fromIt = adjList.begin(); fromIt != adjList.end(); fromIt++) {
+		vector<int> d(adjList.size() + 1, INF);
+		d[fromIt->first] = 0;
+		int sum = 0;
+		int vertex;
+		vector<char> u(adjList.size() + 1);
+		for (map< int, set< pair<int, int> > >::iterator i = adjList.begin(); i != adjList.end(); ++i) {
+			int v = -1;
+			for (map< int, set< pair<int, int> > >::iterator j = adjList.begin(); j != adjList.end(); ++j)
+				if (!u[j->first] && (v == -1 || d[j->first] < d[v]))
+					v = j->first;
+			if (d[v] == INF)
+				break;
+			u[v] = true;
+
+			map< int, set< pair<int, int> > >::iterator from = adjList.find(v);
+			for (set< pair<int, int> >::iterator toIt = from->second.begin(); toIt != from->second.end(); toIt++) {
+				int to = toIt->first,
+					len = toIt->second;
+				if (d[v] + len < d[to])
+					d[to] = d[v] + len;
+					sum += d[v];
+					vertex = fromIt->first;
+			}
+		}
+		excentr.push_back(make_pair(sum, vertex));
+		d.clear();
+	}
+	int rad = INF;
+	cout << "SUM - " << "Vertex\n";
+	for (int j = 0; j < excentr.size(); j++) {
+		cout << excentr[j].first << " " << excentr[j].second;
+		cout << "\n";
+		if (excentr[j].first < rad)
+			rad = excentr[j].first;
+	}
+	cout << "\nMIN ";
+	vector<int> vertex;
+	for (int j = 0; j < excentr.size(); j++) {
+		if (excentr[j].first == rad)
+			cout << excentr[j].second;
 	}
 }

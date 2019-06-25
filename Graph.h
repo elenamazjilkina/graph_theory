@@ -63,6 +63,8 @@ public:
 	void dfs2(int v);
 	void task_2b();
 	void task_3();
+	void task_4a();
+	void task_4b();
 
 	map< int, set< pair< int, int > > > adjList;  // Список смежности
 	map< int, set< pair< int, int > > > adjListTransp;  // Список смежности транспонированный
